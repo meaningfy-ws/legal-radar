@@ -1,0 +1,8 @@
+# Machine Learning dependecies
+scipy
+scikit-learn
+gensim
+numpy
+pandas
+spacy
+clean-text

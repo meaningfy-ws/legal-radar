@@ -1,0 +1,3 @@
+# Jupyter development dependencies
+jupyterlab
+plotly

@@ -70,6 +70,7 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+docs/_build/
 
 # PyBuilder
 target/
@@ -127,3 +128,46 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# project related
+cucumber_report.json
+junit_report.xml
+*.ldb
+.idea/
+/variables.json
+
+# LaTeX temporary files
+*.aux
+*.log
+*.toc
+
+# PDF output - usually a bad idea to keep this in Git
+#*.pdf
+
+# Latexmk
+*.fdb_latexmk
+
+# SyncTeX
+*.synctex.gz
+
+# LaTeX Beamer
+*.snm
+*.vrb
+*.nav
+*.out
+
+# BibTeX
+*.bbl
+*.blg
+report.html
+/tests/ml_experiments/
+tests/elasticsearch_dump/ds_eu_cellar.json
+tests/elasticsearch_dump/ds_eu_timeline.json
+tests/elasticsearch_dump/ds_pwdb.json
+tests/elasticsearch_dump/ds_ireland_timeline.json
+
+airflow.cfg
+airflow.db
+/sem_covid/logs/scheduler/latest/
+airflow*.*
+webserver_config.py
