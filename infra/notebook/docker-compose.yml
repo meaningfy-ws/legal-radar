@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  sftp:
+    image: atmoz/sftp
+    volumes:
+      - jupyter-notebook-work:/home/jovyan/work
+    ports:
+      - ${SFTP_PORT}:22
+    #    command: ${SFTP_USER}:${SFTP_PASSWORD}:::upload
+    #    command: ${SFTP_USER}:${SFTP_PASSWORD}:${SFTP_USER_ID}::upload
+    command: jovyan:${SFTP_PASSWORD}:::work
+    networks:
+      - lr
+
+  notebook:
+    image: notebook_meaningfy_lr:latest
+    build:
+      context: .
+    command: "start-notebook.sh \
+            --NotebookApp.password=${JUPYTER_PASSWORD} \
+            --NotebookApp.token=${JUPYTER_TOKEN}"
+    volumes:
+      - jupyter-notebook-work-lr:/home/jovyan/work
+    environment:
+      - AWS_ACCESS_KEY_ID=${MINIO_ACCESS_KEY}
+      - AWS_SECRET_ACCESS_KEY=${MINIO_SECRET_KEY}
+    ports:
+      - ${JUPYTER_PORT}:8888
+    networks:
+      - lr
+
+volumes:
+  jupyter-notebook-lr:
+    external:
+      name: jupyter-notebook-work-lr
+
+networks:
+  lr:
+    external:
+      name: lr
+
