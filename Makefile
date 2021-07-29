@@ -49,52 +49,90 @@ vault-installed: #; @which vault1 > /dev/null
 
 # Get secrets in dotenv format
 vault_secret_to_dotenv: guard-VAULT_ADDR guard-VAULT_TOKEN vault-installed
-	@ echo "$(BUILD_PRINT)Writing the mfy/sem-covid secret from Vault to .env"
-	@ vault kv get -format="json" mfy/sem-covid-infra | jq -r ".data.data | keys[] as \$$k | \"\(\$$k)=\(.[\$$k])\"" > .env
-	@ vault kv get -format="json" mfy/jupyter-notebook | jq -r ".data.data | keys[] as \$$k | \"\(\$$k)=\(.[\$$k])\"" >> .env
-	@ vault kv get -format="json" mfy/ml-flow | jq -r ".data.data | keys[] as \$$k | \"\(\$$k)=\(.[\$$k])\"" >> .env
-	@ vault kv get -format="json" mfy/air-flow | jq -r ".data.data | keys[] as \$$k | \"\(\$$k)=\(.[\$$k])\"" >> .env
-	@ vault kv get -format="json" mfy/min-io | jq -r ".data.data | keys[] as \$$k | \"\(\$$k)=\(.[\$$k])\"" >> .env
-	@ vault kv get -format="json" mfy/elastic-search | jq -r ".data.data | keys[] as \$$k | \"\(\$$k)=\(.[\$$k])\"" >> .env
-	@ vault kv get -format="json" mfy/sem-covid | jq -r ".data.data | keys[] as \$$k | \"\(\$$k)=\(.[\$$k])\"" >> .env
-	@ vault kv get -format="json" mfy/vault | jq -r ".data.data | keys[] as \$$k | \"\(\$$k)=\(.[\$$k])\"" >> .env
+	@ echo "$(BUILD_PRINT)Writing the lr secret from Vault to .env"
+
+	@ vault kv get -format="json" lr/notebook | jq -r ".data.data | keys[] as \$$k | \"\(\$$k)=\(.[\$$k])\"" >> .env
+	@ vault kv get -format="json" lr/haystack | jq -r ".data.data | keys[] as \$$k | \"\(\$$k)=\(.[\$$k])\"" >> .env
+	@ vault kv get -format="json" lr/graphdb| jq -r ".data.data | keys[] as \$$k | \"\(\$$k)=\(.[\$$k])\"" >> .env
+	@ vault kv get -format="json" lr/minio | jq -r ".data.data | keys[] as \$$k | \"\(\$$k)=\(.[\$$k])\"" >> .env
+	@ vault kv get -format="json" lr/elastic-search | jq -r ".data.data | keys[] as \$$k | \"\(\$$k)=\(.[\$$k])\"" >> .env
+	@ vault kv get -format="json" lr/vault | jq -r ".data.data | keys[] as \$$k | \"\(\$$k)=\(.[\$$k])\"" >> .env
 
 # Get secrets in json format
 vault_secret_to_json: guard-VAULT_ADDR guard-VAULT_TOKEN vault-installed
-	@ echo "$(BUILD_PRINT)Writing the mfy/sem-covid secret from Vault to variables.json"
-	@ vault kv get -format="json" mfy/sem-covid-infra | jq -r ".data.data" > tmp1.json
-	@ vault kv get -format="json" mfy/jupyter-notebook | jq -r ".data.data" > tmp2.json
-	@ vault kv get -format="json" mfy/ml-flow | jq -r ".data.data" > tmp3.json
-	@ vault kv get -format="json" mfy/air-flow | jq -r ".data.data" > tmp4.json
-	@ vault kv get -format="json" mfy/min-io | jq -r ".data.data" > tmp5.json
-	@ vault kv get -format="json" mfy/elastic-search | jq -r ".data.data" > tmp6.json
-	@ vault kv get -format="json" mfy/sem-covid | jq -r ".data.data" > tmp7.json
-	@ vault kv get -format="json" mfy/vault | jq -r ".data.data" > tmp8.json
-	@ jq -s '.[0] * .[1] * .[2] * .[3] * .[4] * .[5] * .[6] * .[7]' tmp*.json> variables.json
+	@ echo "$(BUILD_PRINT)Writing the lr/sem-covid secret from Vault to variables.json"
+	@ vault kv get -format="json" lr/notebook | jq -r ".data.data" > tmp1.json
+	@ vault kv get -format="json" lr/haystack | jq -r ".data.data" > tmp2.json
+	@ vault kv get -format="json" lr/graphdb | jq -r ".data.data" > tmp3.json
+	@ vault kv get -format="json" lr/minio | jq -r ".data.data" > tmp4.json
+	@ vault kv get -format="json" lr/elastic-search | jq -r ".data.data" > tmp5.json
+	@ vault kv get -format="json" lr/vault | jq -r ".data.data" > tmp6.json
+	@ jq -s '.[0] * .[1] * .[2] * .[3] * .[4] * .[5]' tmp*.json> variables.json
 	@ rm tmp*.json
 
-start_airflow:
-	@ echo "$(BUILD_PRINT)Starting the Airflow scheduler and webserver"
-	@ export AIRFLOW_HOME=`pwd` ; \
-	export AIRFLOW__CORE__LOAD_EXAMPLES=false ; \
-	export AIRFLOW__CORE__DAGS_FOLDER=`pwd` ; \
-	yes | airflow db reset ; \
-	airflow db init ; \
-	airflow users  create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin
-	@ export AIRFLOW_HOME=`pwd` ; \
-	export AIRFLOW__CORE__LOAD_EXAMPLES=false ; \
-	export AIRFLOW__CORE__DAGS_FOLDER=`pwd` ; \
-	airflow webserver -p 8080 -D &
-	@ export AIRFLOW_HOME=`pwd` ; \
-	export AIRFLOW__CORE__LOAD_EXAMPLES=false ; \
-	export AIRFLOW__CORE__DAGS_FOLDER=`pwd` ; \
-	airflow scheduler -D &
 
-stop_airflow:
-	@ echo "$(BUILD_PRINT)Stopping the Airflow scheduler and webserver"
-	@ pkill -f airflow
 
 
 lint:
 	@ echo "$(BUILD_PRINT)Looking for dragons in your code ...."
 	@ pylint sem_covid
+
+
+build-externals:
+	@ echo "$(BUILD_PRINT)Creating the necessary volumes, networks and folders and setting the special rights"
+	@ docker volume create s3-disk-lr
+	@ docker volume create jupyter-notebook-work-lr
+	@ docker volume create elasticsearch-lr
+	@ docker volume create graphdb-data-lr
+	@ docker network create -d bridge lr || true
+
+
+start-storage: build-externals
+	@ echo "$(BUILD_PRINT)Starting the File Storage services"
+# 	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file infra/storage/.env.test up -d
+	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file .env up -d
+
+stop-storage:
+	@ echo "$(BUILD_PRINT)Stopping the File Storage services"
+# 	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file infra/storage/.env.test down
+	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file .env down
+
+start-notebook: build-externals
+	@ echo "$(BUILD_PRINT)Starting the Jupyter Notebook services"
+# 	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file infra/notebook/.env.test up -d
+	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file .env up -d
+
+stop-notebook:
+	@ echo "$(BUILD_PRINT)Starting the Jupyter Notebook services"
+# 	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file infra/notebook/.env.test down
+	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file .env down
+
+start-haystack: build-externals
+	@ echo "$(BUILD_PRINT)Starting the Haystack services"
+# 	@ docker-compose --file ./infra/haystack/docker-compose.yml --env-file infra/haystack/.env.test up -d
+	@ docker-compose --file ./infra/haystack/docker-compose.yml --env-file .env up -d
+
+stop-haystack:
+	@ echo "$(BUILD_PRINT)Starting the Haystack services"
+# 	@ docker-compose --file ./infra/haystack/docker-compose.yml --env-file infra/haystack/.env.test down
+	@ docker-compose --file ./infra/haystack/docker-compose.yml --env-file .env down
+
+start-elasticsearch: build-externals
+	@ echo "$(BUILD_PRINT)Starting the Elasticsearch services"
+# 	@ docker-compose --file ./infra/elasticsearch/docker-compose.yml --env-file infra/elasticsearch/.env.test up -d
+	@ docker-compose --file ./infra/elasticsearch/docker-compose.yml --env-file .env up -d
+
+stop-elasticsearch:
+	@ echo "$(BUILD_PRINT)Stopping the Elasticsearch services"
+# 	@ docker-compose --file ./infra/elasticsearch/docker-compose.yml --env-file infra/elasticsearch/.env.test down
+	@ docker-compose --file ./infra/elasticsearch/docker-compose.yml --env-file .env down
+
+start-graphdb: build-externals
+	@ echo "$(BUILD_PRINT)Starting the Graphdb services"
+# 	@ docker-compose --file ./infra/graphdb/docker-compose.yml --env-file infra/graphdb/.env.test up -d
+	@ docker-compose --file ./infra/graphdb/docker-compose.yml --env-file .env up -d
+
+stop-graphdb:
+	@ echo "$(BUILD_PRINT)Stopping the Graphdb services"
+# 	@ docker-compose --file ./infra/graphdb/docker-compose.yml --env-file infra/graphdb/.env.test down
+	@ docker-compose --file ./infra/graphdb/docker-compose.yml --env-file .env down

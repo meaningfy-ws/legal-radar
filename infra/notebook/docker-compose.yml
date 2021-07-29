@@ -4,7 +4,7 @@ services:
   sftp:
     image: atmoz/sftp
     volumes:
-      - jupyter-notebook-work:/home/jovyan/work
+      - jupyter-notebook-work-lr:/home/jovyan/work
     ports:
       - ${SFTP_PORT}:22
     #    command: ${SFTP_USER}:${SFTP_PASSWORD}:::upload
@@ -31,7 +31,7 @@ services:
       - lr
 
 volumes:
-  jupyter-notebook-lr:
+  jupyter-notebook-work-lr:
     external:
       name: jupyter-notebook-work-lr
 

@@ -16,7 +16,7 @@ services:
       - lr
 
   haystack-ui:
-    image: "haystack-streamlit-ui:latest"
+    image: "deepset/haystack-streamlit-ui:latest"
     ports:
       - ${HAYSTACK_UI_PORT}:8501
     environment:

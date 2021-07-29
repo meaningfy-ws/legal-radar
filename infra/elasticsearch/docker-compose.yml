@@ -11,13 +11,15 @@ services:
     ports:
       - ${ELASTICSEARCH_PORT}:9200
     environment:
-      - discovery.type=single-node
-      - ES_JAVA_OPTS="-Xmx16G -Xms256m"
-      - ELASTIC_PASSWORD=${ELASTICSEARCH_PASSWORD:-changeme}
+      ES_JAVA_OPTS: "-Xmx16G -Xms256m"
+      ELASTIC_PASSWORD: ${ELASTICSEARCH_PASSWORD:-changeme}
+      discovery.type: single-node
     volumes:
       - type: volume
-        source: elasticsearch
+        source: elasticsearch-lr
         target: /usr/share/elasticsearch/data
+    networks:
+      - lr
 
 networks:
   lr:
@@ -25,6 +27,6 @@ networks:
       name: lr
 
 volumes:
-  elasticsearch:
+  elasticsearch-lr:
     external:
-      name: elasticsearch
+      name: elasticsearch-lr

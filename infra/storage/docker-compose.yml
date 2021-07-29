@@ -16,7 +16,7 @@ services:
       - lr
 
 volumes:
-  s3-disk:
+  s3-disk-lr:
     external:
       name: s3-disk-lr
 
