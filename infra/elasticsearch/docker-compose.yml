@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  elasticsearch:
+    # This will start an empty elasticsearch instance (so you have to add your documents yourself)
+    image: "elasticsearch:7.9.2"
+    # image: "elasticsearch:${ELASTICSEARCH_VERSION}"
+    # If you want a demo image instead that is "ready-to-query" with some indexed Game of Thrones articles:
+    # image: "deepset/elasticsearch-game-of-thrones"
+    hostname: elasticsearch
+    ports:
+      - ${ELASTICSEARCH_PORT}:9200
+    environment:
+      ES_JAVA_OPTS: "-Xmx16G -Xms256m"
+      ELASTIC_PASSWORD: ${ELASTICSEARCH_PASSWORD:-changeme}
+      discovery.type: single-node
+    volumes:
+      - type: volume
+        source: elasticsearch-lr
+        target: /usr/share/elasticsearch/data
+    networks:
+      - lr
+
+networks:
+  lr:
+    external:
+      name: lr
+
+volumes:
+  elasticsearch-lr:
+    external:
+      name: elasticsearch-lr

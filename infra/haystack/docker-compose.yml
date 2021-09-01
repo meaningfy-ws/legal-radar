@@ -1,0 +1,31 @@
+version: "3"
+
+# TODO: insert configurations from .env
+
+services:
+  haystack-api:
+    image: "deepset/haystack-cpu:0.9.0"
+    ports:
+      - ${HAYSTACK_API_PORT}:8000
+    environment:
+      # See rest_api/pipelines.yaml for configurations of Search & Indexing Pipeline.
+      - ELASTICSEARCHDOCUMENTSTORE_PARAMS_HOST=elasticsearch
+    restart: always
+    command: "/bin/bash -c 'sleep 15 && gunicorn rest_api.application:app -b 0.0.0.0 -k uvicorn.workers.UvicornWorker --workers 1 --timeout 180'"
+    networks:
+      - lr
+
+  haystack-ui:
+    image: "deepset/haystack-streamlit-ui:latest"
+    ports:
+      - ${HAYSTACK_UI_PORT}:8501
+    environment:
+      - API_ENDPOINT=http://haystack-api:8000
+      - EVAL_FILE=eval_labels_example.csv
+    networks:
+      - lr
+
+networks:
+  lr:
+    external:
+      name: lr

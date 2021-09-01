@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  minio-s3:
+    image: minio/minio:latest
+    ports:
+      - ${MINIO_PORT}:9000
+    environment:
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+    command:
+      server /data
+    volumes:
+      - s3-disk-lr:/data
+    networks:
+      - lr
+
+volumes:
+  s3-disk-lr:
+    external:
+      name: s3-disk-lr
+
+networks:
+  lr:
+    external:
+      name: lr
