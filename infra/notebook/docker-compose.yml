@@ -16,10 +16,17 @@ services:
   notebook:
     image: notebook_meaningfy_lr:latest
     build:
-      context: .build
+      context: .
     command: "start-notebook.sh \
             --NotebookApp.password=${JUPYTER_PASSWORD} \
             --NotebookApp.token=${JUPYTER_TOKEN}"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu, utility ]
     volumes:
       - jupyter-notebook-work-lr:/home/jovyan/work
     environment:
