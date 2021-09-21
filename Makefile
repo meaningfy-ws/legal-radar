@@ -104,8 +104,8 @@ start-notebook: build-externals
 
 stop-notebook:
 	@ echo "$(BUILD_PRINT)Starting the Jupyter Notebook services"
-# 	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file infra/notebook/.env.test down
-	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file .env down
+	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file infra/notebook/.env.test down
+#	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file .env down
 
 start-haystack: build-externals
 	@ echo "$(BUILD_PRINT)Starting the Haystack services"

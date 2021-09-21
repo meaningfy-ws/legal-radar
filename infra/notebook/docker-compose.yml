@@ -25,11 +25,11 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              count: 1
               capabilities: [ gpu, utility ]
     volumes:
       - jupyter-notebook-work-lr:/home/jovyan/work
     environment:
+      - JUPYTER_ENABLE_LAB=yes
       - AWS_ACCESS_KEY_ID=${MINIO_ACCESS_KEY}
       - AWS_SECRET_ACCESS_KEY=${MINIO_SECRET_KEY}
     ports:
