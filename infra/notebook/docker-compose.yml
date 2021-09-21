@@ -1,5 +1,9 @@
 version: '3'
 
+# NOTE: the current version of docker-compose (1.29.2) has a Bug and does not run GPU
+# the cuda versions of notebook need to be started, for now, via docker directly
+# see https://github.com/docker/compose/issues/8237
+
 services:
   sftp:
     image: atmoz/sftp

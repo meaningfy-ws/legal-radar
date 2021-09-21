@@ -99,7 +99,8 @@ stop-storage:
 
 start-notebook: build-externals
 	@ echo "$(BUILD_PRINT)Starting the Jupyter Notebook services"
-	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file infra/notebook/.env.test up -d
+	@ docker
+#	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file infra/notebook/.env.test up -d
 #	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file .env up -d
 
 stop-notebook:
