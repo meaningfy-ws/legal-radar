@@ -1,6 +1,12 @@
 SHELL=/bin/bash -o pipefail
 BUILD_PRINT = \e[1;34mSTEP: \e[0m
 
+
+# include .env files if they exist
+-include ./infra/notebook/.env.test
+-include .env
+
+
 #-----------------------------------------------------------------------------
 # Basic commands
 #-----------------------------------------------------------------------------
@@ -99,13 +105,23 @@ stop-storage:
 
 start-notebook: build-externals
 	@ echo "$(BUILD_PRINT)Starting the Jupyter Notebook services"
-# 	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file infra/notebook/.env.test up -d
-	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file .env up -d
+	@ docker image build -t notebook_meaningfy_lr:latest -f infra/notebook/Dockerfile ./infra/notebook
+	@ docker run --gpus all -d -it -p 8890:8888 -v jupyter-notebook-work-lr:/home/jovyan/work \
+			-e JUPYTER_ENABLE_LAB=yes \
+			--name notebook_meaningfy \
+			cschranz/gpu-jupyter:v1.4_cuda-11.0_ubuntu-20.04 \
+			start-notebook.sh \
+            --NotebookApp.password=${JUPYTER_PASSWORD} \
+            --NotebookApp.token=${JUPYTER_TOKEN} \
+#	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file infra/notebook/.env.test up -d
+#	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file .env up -d
 
 stop-notebook:
 	@ echo "$(BUILD_PRINT)Starting the Jupyter Notebook services"
-# 	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file infra/notebook/.env.test down
-	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file .env down
+	@ docker stop notebook_meaningfy
+	@ docker rm notebook_meaningfy
+#	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file infra/notebook/.env.test down
+#	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file .env down
 
 start-haystack: build-externals
 	@ echo "$(BUILD_PRINT)Starting the Haystack services"
