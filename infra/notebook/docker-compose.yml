@@ -16,17 +16,18 @@ services:
   notebook:
     # image: notebook_meaningfy_lr:latest
     image: cschranz/gpu-jupyter:v1.4_cuda-11.0_ubuntu-20.04
+    runtime: nvidia
     build:
       context: .
     command: "start-notebook.sh \
             --NotebookApp.password=${JUPYTER_PASSWORD} \
             --NotebookApp.token=${JUPYTER_TOKEN}"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              capabilities: [ gpu, utility ]
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#              capabilities: [ gpu, utility ]
     volumes:
       - jupyter-notebook-work-lr:/home/jovyan/work
     environment:
