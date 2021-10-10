@@ -108,6 +108,7 @@ start-notebook: build-externals
 	@ docker image build -t notebook_meaningfy_lr:latest -f infra/notebook/Dockerfile ./infra/notebook
 	@ docker run --gpus all -d -it -p 8890:8888 -v jupyter-notebook-work-lr:/home/jovyan/work \
 			-e JUPYTER_ENABLE_LAB=yes \
+			--restart unless-stopped \
 			--name notebook_meaningfy \
 			cschranz/gpu-jupyter:v1.4_cuda-11.0_ubuntu-20.04 \
 			start-notebook.sh \
