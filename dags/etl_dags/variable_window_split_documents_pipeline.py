@@ -4,11 +4,11 @@
 # Date:  20.10.2021
 # Author: Stratulat Ștefan
 # Email: stefan.stratulat1997@gmail.com
-from sem_covid import config
-from sem_covid.adapters.dag.abstract_dag_pipeline import DagPipeline
-from sem_covid.entrypoints.notebooks.legal_radar.services.split_documents_pipeline import WindowedSplitDocumentsPipeline
-from sem_covid.services.model_registry import EmbeddingModelRegistry
-from sem_covid.services.store_registry import store_registry
+from legal_radar import config
+from legal_radar.adapters.dag.abstract_dag_pipeline import DagPipeline
+from legal_radar.services.split_documents_pipeline import WindowedSplitDocumentsPipeline
+from legal_radar.services.model_registry import EmbeddingModelRegistry
+from legal_radar.services.store_registry import store_registry
 
 TEXTUAL_COLUMNS = ['title', 'content']
 FIN_REG_SPLITTED_ES_INDEX = 'ds_finreg_splitted'

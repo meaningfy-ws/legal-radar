@@ -4,10 +4,10 @@
 # Date:  20.10.2021
 # Author: Stratulat Ștefan
 # Email: stefan.stratulat1997@gmail.com
-from sem_covid.adapters.dag.abstract_dag_pipeline import DagPipeline
-from sem_covid.entrypoints.notebooks.legal_radar.services.faiss_indexing_pipeline import FaissIndexingPipeline
-from sem_covid.entrypoints.notebooks.legal_radar.services.split_documents_pipeline import TEXT_PIECE_EMBEDDING
-from sem_covid.services.store_registry import store_registry
+from legal_radar.adapters.dag.abstract_dag_pipeline import DagPipeline
+from legal_radar.services.faiss_indexing_pipeline import FaissIndexingPipeline
+from legal_radar.services.split_documents_pipeline import TEXT_PIECE_EMBEDDING
+from legal_radar.services.store_registry import store_registry
 
 FAISS_BUCKET_NAME = 'faiss-index'
 FAISS_INDEX_FINREG_NAME = 'faiss_index_finreg'
