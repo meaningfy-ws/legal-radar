@@ -14,12 +14,12 @@ import abc
 from es_pandas import es_pandas
 from minio import Minio
 
-from sem_covid import config
-from sem_covid.adapters.abstract_store import IndexStoreABC, FeatureStoreABC, ObjectStoreABC, TripleStoreABC
-from sem_covid.adapters.es_feature_store import ESFeatureStore
-from sem_covid.adapters.es_index_store import ESIndexStore
-from sem_covid.adapters.minio_object_store import MinioObjectStore
-from sem_covid.adapters.sparql_triple_store import SPARQLTripleStore
+from legal_radar import config
+from mfy_data_core.adapters.abstract_store import IndexStoreABC, FeatureStoreABC, ObjectStoreABC, TripleStoreABC
+from mfy_data_core.adapters.es_feature_store import ESFeatureStore
+from mfy_data_core.adapters.es_index_store import ESIndexStore
+from mfy_data_core.adapters.minio_object_store import MinioObjectStore
+from mfy_data_core.adapters.sparql_triple_store import SPARQLTripleStore
 
 
 class StoreRegistryABC(abc.ABC):

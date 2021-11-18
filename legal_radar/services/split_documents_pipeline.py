@@ -14,8 +14,8 @@ import pandas as pd
 import spacy
 from more_itertools import windowed
 
-from sem_covid.services.model_registry import EmbeddingModelRegistryABC
-from sem_covid.services.store_registry import StoreRegistryABC
+from legal_radar.services.model_registry import EmbeddingModelRegistryABC
+from legal_radar.services.store_registry import StoreRegistryABC
 
 TEXTUAL_DATA = 'text_data'
 TEXT_PIECE = 'text_piece'

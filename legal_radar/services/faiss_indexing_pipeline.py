@@ -9,7 +9,7 @@ import pickle
 import numpy as np
 import faiss
 
-from sem_covid.services.store_registry import store_registry, StoreRegistryABC
+from legal_radar.services.store_registry import store_registry, StoreRegistryABC
 
 
 class FaissIndexingPipeline:

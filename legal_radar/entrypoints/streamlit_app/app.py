@@ -10,10 +10,10 @@ import pickle
 import pandas as pd
 import streamlit as st
 
-from sem_covid.entrypoints.notebooks.legal_radar.services.split_documents_pipeline import DOCUMENT_ID_SOURCE
-from sem_covid.services.store_registry import store_registry
-from sem_covid.services.model_registry import embedding_registry
-from sem_covid import config
+from legal_radar.services.split_documents_pipeline import DOCUMENT_ID_SOURCE
+from legal_radar.services.store_registry import store_registry
+from legal_radar.services.model_registry import embedding_registry
+from legal_radar import config
 import numpy as np
 from more_itertools import unique_everseen
 
