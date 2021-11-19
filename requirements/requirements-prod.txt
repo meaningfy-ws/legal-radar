@@ -1,3 +1,4 @@
 git+https://github.com/meaningfy-ws/mfy-data-core
 git+https://github.com/meaningfy-ws/mfy-nlp-core
-faiss==1.5.3
+faiss-cpu==1.7.1.post2 
+streamlit==1.2.0
