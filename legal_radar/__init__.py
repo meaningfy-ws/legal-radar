@@ -20,8 +20,13 @@ logger = logging.getLogger(__name__)
 
 dotenv.load_dotenv(verbose=True, override=True)
 
-SECRET_PATHS = ['elastic-search', 'notebook', 'minio', 'legal-radar']
-SECRET_MOUNT = 'lr'
+SECRET_PATHS = ['air-flow', 'elastic-search', 'jupyter-notebook', 'min-io', 'ml-flow', 'sem-covid',
+                'sem-covid-infra']
+SECRET_MOUNT = 'mfy'
+
+# use this settings when lega-radar infra is ready
+#SECRET_PATHS = ['elastic-search', 'notebook', 'minio', 'legal-radar']
+#SECRET_MOUNT = 'lr'
 
 VaultSecretsStore.default_secret_mount = SECRET_MOUNT
 VaultSecretsStore.default_secret_paths = SECRET_PATHS
