@@ -24,7 +24,7 @@ SECRET_PATHS = ['air-flow', 'elastic-search', 'jupyter-notebook', 'min-io', 'ml-
                 'sem-covid-infra']
 SECRET_MOUNT = 'mfy'
 
-# use this settings when lega-radar infra is ready
+# TODO: use this settings when lega-radar infra is ready
 #SECRET_PATHS = ['elastic-search', 'notebook', 'minio', 'legal-radar']
 #SECRET_MOUNT = 'lr'
 
