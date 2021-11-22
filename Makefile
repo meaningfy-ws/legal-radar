@@ -1,5 +1,5 @@
 SHELL=/bin/bash -o pipefail
-BUILD_PRINT = \e[1;34mSTEP: \e[0m
+BUILD_PRINT = STEP: 
 
 
 # include .env files if they exist
@@ -11,6 +11,18 @@ BUILD_PRINT = \e[1;34mSTEP: \e[0m
 # Basic commands
 #-----------------------------------------------------------------------------
 
+install-prod:
+	@ echo "$(BUILD_PRINT)Installing the prod requirements"
+	@ pip install -r requirements/requirements-prod.txt
+
+install-dev: install-test
+	@ echo "$(BUILD_PRINT)Installing the dev requirements"
+	@ pip install --upgrade pip
+	@ pip install -r requirements/requirements-dev.txt
+
+install-test: install-prod
+	@ echo "$(BUILD_PRINT)Installing the test requirements"
+	@ pip install -r requirements/requirements-test.txt
 
 install:
 	@ echo "$(BUILD_PRINT)Installing the requirements"
