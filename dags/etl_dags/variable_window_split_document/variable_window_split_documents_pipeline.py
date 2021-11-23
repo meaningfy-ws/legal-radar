@@ -11,17 +11,15 @@ sys.path = list(set(sys.path))
 from airflow.decorators import dag, task
 from dags.etl_dags import DEFAULT_DAG_ARGUMENTS
 
-REQUIREMENTS_FILE_NAME = 'requirements.txt'
 
-install_requirements = []
-
-with open(REQUIREMENTS_FILE_NAME) as file:
-    install_requirements = list(map(str.strip,file.read().splitlines()))
 
 
 @dag(default_args=DEFAULT_DAG_ARGUMENTS, tags=['etl'])
 def windowed_split_dag():
-    
+    REQUIREMENTS_FILE_NAME = 'requirements.txt'
+    install_requirements = []
+    with open(REQUIREMENTS_FILE_NAME) as file:
+        install_requirements = list(map(str.strip,file.read().splitlines()))
     @task.virtualenv(system_site_packages=False,
                      requirements=install_requirements,
                      )
