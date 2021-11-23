@@ -171,3 +171,7 @@ airflow.db
 /sem_covid/logs/scheduler/latest/
 airflow*.*
 webserver_config.py
+infra/airflow/dags/*
+infra/airflow/logs/*
+infra/airflow/plugins/*
+infra/airflow/legal_radar/*
