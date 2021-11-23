@@ -163,5 +163,3 @@ class LegalRadarConfig(VaultConfig,
 
 
 config = LegalRadarConfig()
-
-print(config.ELASTICSEARCH_USERNAME)
