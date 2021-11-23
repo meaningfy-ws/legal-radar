@@ -10,6 +10,8 @@ sys.path.append("/opt/airflow/")
 sys.path = list(set(sys.path))
 from airflow.decorators import dag, task
 from dags.etl_dags import DEFAULT_DAG_ARGUMENTS
+import os
+os.chdir('/opt/airflow/dags/etl_dags/faiss_multi_indexing/')
 
 REQUIREMENTS_FILE_NAME = 'requirements.txt'
 
