@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 DEFAULT_DAG_ARGUMENTS = {
     "owner": "airflow",
     "depends_on_past": False,
-    "start_date": datetime(2021, 1, 1),
+    "start_date": datetime.now(),
     "email": ["info@meaningfy.ws"],
     "email_on_failure": False,
     "email_on_retry": False,
