@@ -63,6 +63,6 @@ def create_index_dag():
     create_index()
     
 
-etl_dag = create_index_dag()()
+etl_dag = create_index_dag()
 
 
