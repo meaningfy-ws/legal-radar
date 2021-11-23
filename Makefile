@@ -195,5 +195,7 @@ deploy-dags:
 	@ echo "$(BUILD_PRINT)Deploy dags to Airflow"
 	@ rm -rf infra/airflow/dags/*
 	@ rm -rf infra/airflow/legal_radar/*
+	@ rm -rf infra/airflow/.env
 	@ cp -a dags/. infra/airflow/dags
 	@ cp -a legal_radar/. infra/airflow/legal_radar
+	@ cp -a .env infra/airflow/.env
