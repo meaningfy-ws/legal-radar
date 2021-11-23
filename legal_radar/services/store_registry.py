@@ -81,3 +81,6 @@ class StoreRegistry(StoreRegistryABC):
         :return:
         """
         return ESFeatureStore(StoreRegistry.es_index_store())
+
+
+store_registry = StoreRegistry()
