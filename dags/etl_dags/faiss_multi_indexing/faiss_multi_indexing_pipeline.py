@@ -22,7 +22,7 @@ with open(REQUIREMENTS_FILE_NAME) as file:
 
 
 @dag(default_args=DEFAULT_DAG_ARGUMENTS, tags=['etl'])
-def create_index_dag(self):
+def create_index_dag():
     
     @task.virtualenv(system_site_packages=False,
                      requirements=install_requirements,
