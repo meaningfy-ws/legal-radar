@@ -170,7 +170,7 @@ stop-graphdb:
 
 create-env-airflow:
 	@ echo "$(BUILD_PRINT) Create Airflow env"
-	
+	@ mkdir -p infra/airflow/dags infra/airflow/logs infra/airflow/plugins infra/airflow/legal_radar
 	@ echo -e "AIRFLOW_UID=$(CURRENT_UID)" >infra/airflow/.env
 
 clear-airflow: create-env-airflow
@@ -193,5 +193,5 @@ stop-airflow:
 
 deploy-dags:
 	@ echo "$(BUILD_PRINT)Deploy dags to Airflow"
-	@ cp -a /dags/. /infra/airflow/dags
-	@ cp -a legal_radar /infra/airflow/
+	@ cp -a dags/. infra/airflow/dags
+	@ cp -a legal_radar/. infra/airflow/legal_radar

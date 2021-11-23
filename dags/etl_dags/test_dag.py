@@ -1,4 +1,7 @@
 
+import sys
+sys.path.append("/opt/airflow/")
+sys.path = list(set(sys.path))
 from airflow.decorators import dag, task
 from dags.etl_dags import DEFAULT_DAG_ARGUMENTS
 
@@ -8,8 +11,11 @@ def test_dag_with_task():
     
     @task
     def first_step():
-        from legal_radar import config
-        print(config.ELASTICSEARCH_USERNAME)
+        print("Enter in venv")
+        import sys
+        sys.path.append("/opt/airflow/")
+        #from legal_radar import config
+        #print(config.ELASTICSEARCH_USERNAME)
         return {"one": "Hello", "two": "World"}
 
     @task()
