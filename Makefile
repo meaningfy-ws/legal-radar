@@ -1,6 +1,8 @@
 SHELL=/bin/bash -o pipefail
 BUILD_PRINT = STEP: 
 
+CURRENT_UID := $(shell id -u)
+export CURRENT_UID
 
 # include .env files if they exist
 -include ./infra/notebook/.env.test
@@ -165,3 +167,31 @@ stop-graphdb:
 	@ echo "$(BUILD_PRINT)Stopping the Graphdb services"
 # 	@ docker-compose --file ./infra/graphdb/docker-compose.yml --env-file infra/graphdb/.env.test down
 	@ docker-compose --file ./infra/graphdb/docker-compose.yml --env-file .env down
+
+create-env-airflow:
+	@ echo "$(BUILD_PRINT) Create Airflow env"
+	
+	@ echo -e "AIRFLOW_UID=$(CURRENT_UID)" >infra/airflow/.env
+
+clear-airflow: create-env-airflow
+	@ echo "$(BUILD_PRINT) Clear Airflow volumes" 
+	@ docker-compose --file ./infra/airflow/docker-compose.yaml --env-file ./infra/airflow/.env down --volumes --remove-orphans
+
+build-airflow: clear-airflow create-env-airflow
+	@ echo "$(BUILD_PRINT) Build Airflow services"
+	@ docker-compose --file ./infra/airflow/docker-compose.yaml --env-file ./infra/airflow/.env up airflow-init
+
+
+start-airflow:
+	@ echo "$(BUILD_PRINT)Starting Airflow servies"
+	@ docker-compose --file ./infra/airflow/docker-compose.yaml --env-file ./infra/airflow/.env up
+
+
+stop-airflow:
+	@ echo "$(BUILD_PRINT)Stoping Airflow services"
+	@ docker-compose --file ./infra/airflow/docker-compose.yaml --env-file ./infra/airflow/.env down 
+
+deploy-dags:
+	@ echo "$(BUILD_PRINT)Deploy dags to Airflow"
+	@ cp -a /dags/. /infra/airflow/dags
+	@ cp -a legal_radar /infra/airflow/
