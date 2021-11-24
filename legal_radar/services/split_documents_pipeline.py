@@ -88,21 +88,21 @@ class WindowedSplitDocumentsPipeline:
                 
             return None
 
-        try:
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                futures = [executor.submit(split_documents_worker,
-                                        index,
-                                        value,
-                                        self.split_window_size,
-                                        self.split_window_step
-                                        )
-                        for index, value in self.dataset[TEXTUAL_DATA].items()
-                        ]
-            
-                for future in futures:
-                    future.result()
-        except:
-            print("Error in concurrent.futures zone!")
+        #try:
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = [executor.submit(split_documents_worker,
+                                    index,
+                                    value,
+                                    self.split_window_size,
+                                    self.split_window_step
+                                    )
+                    for index, value in self.dataset[TEXTUAL_DATA].items()
+                    ]
+        
+            for future in futures:
+                future.result()
+        #except:
+        #    print("Error in concurrent.futures zone!")
     
     def execute(self):
         self.load_dataset()
