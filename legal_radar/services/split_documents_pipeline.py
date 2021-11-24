@@ -13,6 +13,7 @@ from typing import List
 import pandas as pd
 import nltk
 nltk.download('punkt')
+from nltk import sent_tokenize
 from more_itertools import windowed
 
 from legal_radar.services.model_registry import EmbeddingModelRegistryABC
@@ -64,7 +65,7 @@ class WindowedSplitDocumentsPipeline:
             if len(value)==0:
                 return None
             es_store = self.store_registry.es_index_store()
-            sentences = nltk.sent_tokenize(value)
+            sentences = sent_tokenize(value)
             windowed_texts = list(
                 windowed(sentences,
                         n=window_size,
