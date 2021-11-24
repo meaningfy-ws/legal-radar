@@ -19,4 +19,5 @@ DEFAULT_DAG_ARGUMENTS = {
     "schedule_interval": "@once",
     "max_active_runs": 128,
     "concurrency": 128,
+    "execution_timeout": timedelta(hours=24),
 }
