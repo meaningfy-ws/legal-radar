@@ -89,7 +89,7 @@ class WindowedSplitDocumentsPipeline:
             return None
 
         #try:
-        with concurrent.futures.ThreadPoolExecutor() as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
             futures = [executor.submit(split_documents_worker,
                                     index,
                                     value,
