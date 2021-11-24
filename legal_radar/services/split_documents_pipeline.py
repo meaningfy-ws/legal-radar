@@ -11,7 +11,7 @@ import hashlib
 from typing import List
 
 import pandas as pd
-import spacy
+import nltk
 from more_itertools import windowed
 
 from legal_radar.services.model_registry import EmbeddingModelRegistryABC
@@ -21,11 +21,6 @@ TEXTUAL_DATA = 'text_data'
 TEXT_PIECE = 'text_piece'
 DOCUMENT_ID_SOURCE = 'document_id_source'
 TEXT_PIECE_EMBEDDING = 'text_piece_embedding'
-
-nlp = spacy.blank('en')
-nlp.add_pipe("sentencizer")
-nlp.max_length = sys.maxsize
-
 
 class WindowedSplitDocumentsPipeline:
 
@@ -66,13 +61,14 @@ class WindowedSplitDocumentsPipeline:
         def split_documents_worker(index, value, window_size, window_step):
             try:
                 es_store = self.store_registry.es_index_store()
-                sentences = [sent.text for sent in nlp(value).sents]
+                sentences = nltk.sent_tokenize(value)
                 windowed_texts = list(
                     windowed(sentences,
                             n=window_size,
                             fillvalue='',
                             step=window_step)
                 )
+                del sentences
                 result_df = pd.DataFrame()
                 for windowed_text in windowed_texts:
                     text_piece = ' '.join(windowed_text)
@@ -83,6 +79,8 @@ class WindowedSplitDocumentsPipeline:
                 es_store.put_dataframe(index_name=self.result_es_index_name,
                                     content=result_df
                                     )
+                del result_df
+                del windowed_text
             except:
                 print("Some error in split_documents_worker")
                 

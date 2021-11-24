@@ -55,6 +55,7 @@ def windowed_split_dag():
                 store_registry=store_registry,
                 embedding_model_registry=EmbeddingModelRegistry())
             windowed_split_documents_pipeline.execute()
+            del windowed_split_documents_pipeline
 
     windowed_split()
     
