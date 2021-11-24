@@ -70,18 +70,17 @@ class WindowedSplitDocumentsPipeline:
                             fillvalue='',
                             step=window_step)
                 )
-                result_df = pd.DataFrame()
                 for windowed_text in windowed_texts:
+                    result_df = pd.DataFrame()
                     text_piece = ' '.join(windowed_text)
                     new_index = hashlib.sha256((index + text_piece).encode('utf-8')).hexdigest()
                     result_df.loc[new_index, TEXT_PIECE] = text_piece
                     result_df.loc[new_index, DOCUMENT_ID_SOURCE] = index
-                result_df[TEXT_PIECE_EMBEDDING] = emb_model.encode(result_df[TEXT_PIECE].values)
-                es_store.put_dataframe(index_name=self.result_es_index_name,
-                                    content=result_df
-                                    )
-                del result_df
-                del windowed_text
+                    result_df[TEXT_PIECE_EMBEDDING] = emb_model.encode(result_df[TEXT_PIECE].values)
+                    es_store.put_dataframe(index_name=self.result_es_index_name,content=result_df)
+                    del result_df
+                    del text_piece
+                    del new_index
                 del sentences
             except:
                 print("Some error in split_documents_worker")
