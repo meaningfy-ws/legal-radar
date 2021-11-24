@@ -12,6 +12,7 @@ from typing import List
 
 import pandas as pd
 import nltk
+nltk.download('punkt')
 from more_itertools import windowed
 
 from legal_radar.services.model_registry import EmbeddingModelRegistryABC
