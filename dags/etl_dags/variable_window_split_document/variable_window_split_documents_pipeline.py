@@ -27,6 +27,9 @@ def windowed_split_dag():
     def windowed_split():
         import sys
         sys.path.append("/opt/airflow/")
+        import nltk
+        nltk.download('punkt',download_dir='/opt/airflow/')
+        nltk.data.path.append('/opt/airflow/')
         from legal_radar import config
         from legal_radar.services.split_documents_pipeline import WindowedSplitDocumentsPipeline
         from legal_radar.services.model_registry import EmbeddingModelRegistry

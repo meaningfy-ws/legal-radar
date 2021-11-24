@@ -11,8 +11,6 @@ import hashlib
 from typing import List
 
 import pandas as pd
-import nltk
-nltk.download('punkt')
 from nltk import sent_tokenize
 from more_itertools import windowed
 
