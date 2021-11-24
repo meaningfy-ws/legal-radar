@@ -42,10 +42,11 @@ def windowed_split_dag():
             #(1, 1),
             #(2, 1),
             #(5, 2),
-            #(10, 5),
-            (20, 10),
-            (50, 25),
-            (100, 50)]
+            (10, 5),
+            # (20, 10),
+            # (50, 25),
+            # (100, 50)
+            ]
         for split_window_size, split_window_step in EXPERIMENT_CONFIGS:
             result_es_index_name = '_'.join(map(str, (FIN_REG_SPLITTED_ES_INDEX, split_window_size, split_window_step)))
             print(f'Start document splitter for: {result_es_index_name}')
