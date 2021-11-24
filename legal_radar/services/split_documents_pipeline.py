@@ -60,6 +60,8 @@ class WindowedSplitDocumentsPipeline:
 
         def split_documents_worker(index, value, window_size, window_step):
             try:
+                if len(value)==0:
+                    return None
                 es_store = self.store_registry.es_index_store()
                 sentences = nltk.sent_tokenize(value)
                 windowed_texts = list(
@@ -101,20 +103,7 @@ class WindowedSplitDocumentsPipeline:
                     future.result()
         except:
             print("Error in concurrent.futures zone!")
-            # self.result_dataset = pd.DataFrame([result
-            #                                     for future in futures for result in future.result()],
-            #                                    columns=[DOCUMENT_ID_SOURCE, TEXT_PIECE])
-
-    # def compute_embeddings(self):
-    #     emb_model = self.embedding_model_registry.sent2vec_universal_sent_encoding()
-    #     self.result_dataset[TEXT_PIECE_EMBEDDING] = emb_model.encode(self.result_dataset[TEXT_PIECE].values)
-    #
-    # def store_splitted_documents(self):
-    #     self.result_dataset.reset_index(drop=True, inplace=True)
-    #     es_store = self.store_registry.es_index_store()
-    #     es_store.put_dataframe(index_name=self.result_es_index_name,
-    #                            content=self.result_dataset)
-
+    
     def execute(self):
         self.load_dataset()
         self.prepare_textual_data()
