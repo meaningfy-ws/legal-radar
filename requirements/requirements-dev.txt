@@ -1,1 +1,2 @@
 -r doc.txt
+streamlit==1.2.0
