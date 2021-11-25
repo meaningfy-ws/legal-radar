@@ -191,6 +191,14 @@ stop-airflow:
 	@ echo "$(BUILD_PRINT)Stoping Airflow services"
 	@ docker-compose --file ./infra/airflow/docker-compose.yaml --env-file ./infra/airflow/.env down 
 
+start-jupyterhub:
+	@ echo "$(BUILD_PRINT)Starting Jupyterhub servies"
+	@ docker-compose --file ./infra/jupyterhub/docker-compose.yaml up -d
+
+stop-jupyterhub:
+	@ echo "$(BUILD_PRINT)Stoping Jupyterhub servies"
+	@ docker-compose --file ./infra/jupyterhub/docker-compose.yaml down
+
 deploy-dags:
 	@ echo "$(BUILD_PRINT)Deploy dags to Airflow"
 	@ rm -rf infra/airflow/dags/*

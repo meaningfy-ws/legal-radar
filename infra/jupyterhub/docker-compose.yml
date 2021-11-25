@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  notebook:
+    build: .
+    ports:
+      - "8887:8887"
