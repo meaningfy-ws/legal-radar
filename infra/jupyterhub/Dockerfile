@@ -14,7 +14,7 @@ RUN apt-get install npm nodejs -y && \
     useradd admin && echo admin:change.it! | chpasswd && mkdir /home/admin && chown admin:admin /home/admin
 
 ADD jupyterhub_config.py /app/analysis/jupyterhub_config.py
-ADD create-user.py /app/analysis/create-user.py
+ADD create-new-user.py /app/analysis/create-new-user.py
 
 CMD ["jupyterhub", "--ip=0.0.0.0", "--port=8887", "--no-ssl"]
 
