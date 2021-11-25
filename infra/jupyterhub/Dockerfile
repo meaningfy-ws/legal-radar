@@ -6,7 +6,6 @@ USER root
 RUN apt-get upgrade -y && apt-get update -y && apt-get install make && apt-get install build-essential git -y
 RUN apt-get install npm nodejs -y && \
     npm install -g configurable-http-proxy && \
-    pip3 install sudospawner && \
     pip3 install jupyterhub && \
     pip3 install --upgrade notebook && \
     pip3 install pandas scipy matplotlib && \
