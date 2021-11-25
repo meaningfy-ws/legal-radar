@@ -19,3 +19,5 @@ ADD create-new-user.py /app/analysis/create-new-user.py
 CMD ["jupyterhub", "--ip=0.0.0.0", "--port=8887", "--no-ssl"]
 
 EXPOSE 8887
+
+
