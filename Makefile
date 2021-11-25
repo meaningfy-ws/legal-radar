@@ -193,7 +193,7 @@ stop-airflow:
 
 start-jupyterhub:
 	@ echo "$(BUILD_PRINT)Starting Jupyterhub servies"
-	@ docker-compose --file ./infra/jupyterhub/docker-compose.yml up -d
+	@ docker-compose --file ./infra/jupyterhub/docker-compose.yml up
 
 stop-jupyterhub:
 	@ echo "$(BUILD_PRINT)Stoping Jupyterhub servies"
