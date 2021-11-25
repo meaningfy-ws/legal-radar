@@ -194,7 +194,7 @@ stop-airflow:
 build-jupyterhub:
 	@ echo "$(BUILD_PRINT)Building Jupyterhub servies"
 	@ docker-compose --file ./infra/jupyterhub/docker-compose.yml build --no-cache --force-rm
-	@ docker-compose --file ./infra/jupyterhub/docker-compose.yml up --force-recreate
+	@ docker-compose --file ./infra/jupyterhub/docker-compose.yml up -d --force-recreate
 
 start-jupyterhub:
 	@ echo "$(BUILD_PRINT)Starting Jupyterhub servies"
