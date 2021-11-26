@@ -18,8 +18,8 @@ import numpy as np
 from more_itertools import unique_everseen
 
 FAISS_BUCKET_NAME = 'faiss-index'
-FAISS_INDEX_FINREG_NAME = 'faiss_index_finreg.pkl'
-FIN_REG_SPLITTED_ES_INDEX = 'ds_finreg_splitted'
+FAISS_INDEX_FINREG_NAME = 'faiss_index_finreg_10_5_.pkl'
+FIN_REG_SPLITTED_ES_INDEX = 'ds_finreg_splitted_10_5'
 DATES_DOCUMENT = 'dates_document'
 HTML_LINKS = 'htmls_to_download'
 DEFAULT_SEARCH = """The Semantic Interoperability Community develops solutions to help European public administrations perform seamless and meaningful cross-border and cross-domain data exchanges."""
