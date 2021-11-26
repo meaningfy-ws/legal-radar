@@ -1,4 +1,4 @@
-from pandas.io import pickle
+import pickle
 from legal_radar import config
 from legal_radar.services.feature_selector import reduce_array_column
 from legal_radar.services.store_registry import store_registry
