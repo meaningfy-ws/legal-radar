@@ -14,7 +14,6 @@ def reduce_array_column(data_frame: pd.DataFrame, column: str, new_column: str =
 
     def join_list_func(x):
         if x is None:
-            print('None type!')
             x = ['INVALID_CELEX_NUMBER']
         return ', '.join(list(x))
 
