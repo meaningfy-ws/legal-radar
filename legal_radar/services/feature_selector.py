@@ -12,10 +12,18 @@ def reduce_array_column(data_frame: pd.DataFrame, column: str, new_column: str =
                      If the new_column is None then the original column is replaced
     """
 
+    def join_list_func(x):
+        if x is None:
+            print('None type!')
+            x = ['INVALID_CELEX_NUMBER']
+        return ', '.join(list(x))
+
     if new_column:
-        data_frame[new_column] = data_frame[column].apply(lambda x: ", ".join(x))
+        data_frame[new_column] = data_frame[column].apply(
+            lambda x: join_list_func(x))
     else:
-        new_column_values = data_frame[column].apply(lambda x: ", ".join(x))
+        new_column_values = data_frame[column].apply(
+            lambda x: join_list_func(x))
         new_data_frame = data_frame.assign(**{column: new_column_values})
 
     return new_data_frame
@@ -31,8 +39,10 @@ def multi_label_column_to_binary_columns(data_frame: pd.DataFrame, column: str):
         :column: the column with array values
         :return: a new DataFrame with binary columns
     """
-    label_unique_values = data_frame[column].str.replace("'", '').str.split(',').explode().to_frame()
-    drop_identical_values = label_unique_values[column].drop_duplicates(keep="first").tolist()
+    label_unique_values = data_frame[column].str.replace(
+        "'", '').str.split(',').explode().to_frame()
+    drop_identical_values = label_unique_values[column].drop_duplicates(
+        keep="first").tolist()
     multi_label_data_frame = pd.concat([data_frame,
                                         pd.crosstab(label_unique_values.index,
                                                     label_unique_values[column])[drop_identical_values]], axis=1)
