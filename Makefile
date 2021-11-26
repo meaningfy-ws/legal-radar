@@ -204,7 +204,11 @@ stop-jupyterhub:
 	@ echo "$(BUILD_PRINT)Stoping Jupyterhub servies"
 	@ docker-compose --file ./infra/jupyterhub/docker-compose.yml down
 
-deploy-dags:
+update-project:
+	@ echo "$(BUILD_PRINT)Sync project files from git repository."
+	@ git pull
+
+deploy-dags: update-project
 	@ echo "$(BUILD_PRINT)Deploy dags to Airflow"
 	@ rm -rf infra/airflow/dags/*
 	@ rm -rf infra/airflow/legal_radar/*
@@ -213,7 +217,7 @@ deploy-dags:
 	@ cp -a legal_radar/. infra/airflow/legal_radar
 	@ cp -a .env infra/airflow/.env
 
-start-semantic-search-build:
+start-semantic-search-build: update-project
 	@ echo "$(BUILD_PRINT)Starting the semantic-search services"
 	@ cp .env ./infra/semantic-search
 	@ rm -rf ./infra/semantic-search/legal_radar
