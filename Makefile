@@ -221,7 +221,7 @@ start-semantic-search-build:
 	@ docker container prune -f
 	@ docker image rm semantic-search_semantic-search || true
 	@ docker-compose --file ./infra/semantic-search/docker-compose.yml --env-file ./infra/semantic-search/.env build --no-cache --force-rm
-	@ docker-compose --file ./infra/semantic-search/docker-compose.yml --env-file ./infra/semantic-search/.env up --force-recreate
+	@ docker-compose --file ./infra/semantic-search/docker-compose.yml --env-file ./infra/semantic-search/.env up -d --force-recreate
 
 stop-semantic-search:
 	@ echo "$(BUILD_PRINT)Stopping the semantic-search services"
