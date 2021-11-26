@@ -1,6 +1,6 @@
 
 FROM python:3.8
-COPY legal_radar /opt
+ADD legal_radar /opt/legal_radar
 COPY requirements-semantic-search.txt /opt
 COPY .env /opt
 
