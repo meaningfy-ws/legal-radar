@@ -217,7 +217,7 @@ start-semantic-search-build:
 	@ echo "$(BUILD_PRINT)Starting the semantic-search services"
 	@ cp .env ./infra/semantic-search
 	@ rm -rf ./infra/semantic-search/legal_radar
-	@ cp ./legal_radar ./infra/semantic-search/
+	@ cp -r legal_radar ./infra/semantic-search/
 	@ docker container prune -f
 	@ docker image rm semantic-search_semantic-search || true
 	@ docker-compose --file ./infra/semantic-search/docker-compose.yml --env-file ./infra/semantic-search/.env build --no-cache --force-rm
