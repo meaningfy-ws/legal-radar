@@ -212,3 +212,15 @@ deploy-dags:
 	@ cp -a dags/. infra/airflow/dags
 	@ cp -a legal_radar/. infra/airflow/legal_radar
 	@ cp -a .env infra/airflow/.env
+
+start-semantic-search-build:
+        @ echo "$(BUILD_PRINT)Starting the semantic-search services"
+        @ cp .env ./infra/semantic-search
+        @ docker container prune -f
+        @ docker image rm semantic-search_semantic-search || true
+        @ docker-compose --file ./infra/semantic-search/docker-compose.yml --env-file ./infra/semantic-search/.env build --no-cache --force-rm
+        @ docker-compose --file ./infra/semantic-search/docker-compose.yml --env-file ./infra/semantic-search/.env up -d --force-recreate
+
+stop-semantic-search:
+        @ echo "$(BUILD_PRINT)Stopping the semantic-search services"
+        @ docker-compose --file ./infra/semantic-search/docker-compose.yml --env-file ./infra/semantic-search/.env down
