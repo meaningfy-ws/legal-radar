@@ -1,0 +1,15 @@
+version: '3.1'
+services:
+    proxy:
+        build: .
+        environment:
+          - LR_PROD=lr.prod.localhost
+          - LR_DEV=lr.dev.localhost
+        ports:
+            - "80:80"
+        networks:
+            - proxy-net
+networks:
+  proxy-net:
+    external:
+      name: proxy-net
