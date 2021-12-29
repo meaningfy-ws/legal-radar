@@ -6,7 +6,7 @@
 
         location / {
     #        rewrite ^/minio/(.*)$ $1 break;
-           proxy_pass http://andreea_marin_dev:9000;
+           proxy_pass http://minio_dev:9000;
     #        proxy_bind http://andreea_marin:9001/;
            proxy_redirect off;
            proxy_set_header X-Real-IP $remote_addr;
