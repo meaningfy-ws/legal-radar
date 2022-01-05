@@ -2,7 +2,16 @@ version: '3'
 
 services:
   jupyterhub:
+    container_name: jupyterhub
     build: .
-    ports:
-      - "8887:8887"
-      
+    networks:
+      - lradar
+      - proxy-net
+
+
+networks:
+  lradar:
+    internal: true
+  proxy-net:
+    external:
+      name: proxy-net

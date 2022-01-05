@@ -2,18 +2,23 @@ version: '3'
 
 services:
   semantic-search:
+    container_name: semantic_search
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-          - "8555:8501"
+#    ports:
+#          - "8555:8501"
     environment:
       - VAULT_ADDR=${VAULT_ADDR}
       - VAULT_TOKEN=${VAULT_TOKEN}
     networks:
-      - elk
+      - lradar
+      - proxy-net
+
 
 networks:
-  elk:
+  lradar:
+    internal: true
+  proxy-net:
     external:
-      name: elk
+      name: proxy-net

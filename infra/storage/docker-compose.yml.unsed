@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  minio-s3:
+    container_name: andreea_marin
+    image: minio/minio:latest
+    ports:
+      - ${MINIO_PORT}:9000
+      - 9001:9001
+    environment:
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_ROOT_USER=admin0000
+      - MINIO_ROOT_PASSWORD=admin0000
+#      - MINIO_BROWSER_REDIRECT_URL=http://minio-console.localhost
+      - MINIO_SERVER_URL=http://minio.localhost
+#      - MINIO_BROWSER_REDIRECT_URL=http://localhost.com
+#      - CONSOLE_SUBPATH=minio/
+    command:
+      server --console-address :9001 /data
+    volumes:
+      - s3-disk:/data
+    networks:
+      - lr
+
+volumes:
+  s3-disk:
+    external:
+      name: s3-disk
+
+networks:
+  lr:
+    external:
+      name: lr

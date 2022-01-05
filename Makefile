@@ -101,10 +101,11 @@ lint:
 build-externals:
 	@ echo "$(BUILD_PRINT)Creating the necessary volumes, networks and folders and setting the special rights"
 	@ docker volume create s3-disk-lr
-	@ docker volume create jupyter-notebook-work-lr
-	@ docker volume create elasticsearch-lr
-	@ docker volume create graphdb-data-lr
-	@ docker network create -d bridge lr || true
+	@ docker network create proxy-net || true
+#	@ docker volume create jupyter-notebook-work-lr
+#	@ docker volume create elasticsearch-lr
+#	@ docker volume create graphdb-data-lr
+#	@ docker network create -d bridge lr || true
 
 
 start-storage: build-externals
@@ -116,6 +117,16 @@ stop-storage:
 	@ echo "$(BUILD_PRINT)Stopping the File Storage services"
 # 	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file infra/storage/.env.test down
 	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file .env down
+
+start-proxy: build-externals
+	@ echo "$(BUILD_PRINT)Starting the Nginx services"
+# 	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file infra/storage/.env.test up -d
+	@ docker-compose --file ./infra/nginx/docker-compose.yml --env-file .env up -d
+
+stop-proxy:
+	@ echo "$(BUILD_PRINT)Stopping the Nginx services"
+# 	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file infra/storage/.env.test down
+	@ docker-compose --file ./infra/nginx/docker-compose.yml --env-file .env down
 
 start-notebook: build-externals
 	@ echo "$(BUILD_PRINT)Starting the Jupyter Notebook services"
@@ -170,7 +181,8 @@ stop-graphdb:
 
 create-env-airflow:
 	@ echo "$(BUILD_PRINT) Create Airflow env"
-	@ mkdir -p infra/airflow/dags infra/airflow/logs infra/airflow/plugins infra/airflow/legal_radar
+	@ mkdir -p infra/airflow/logs infra/airflow/plugins
+	@ cd infra/airflow/ && ln -s -f ../../dags && ln -s -f ../../legal_radar
 	@ echo -e "AIRFLOW_UID=$(CURRENT_UID)" >infra/airflow/.env
 
 clear-airflow: create-env-airflow
@@ -217,7 +229,7 @@ deploy-dags: update-project
 	@ cp -a legal_radar/. infra/airflow/legal_radar
 	@ cp -a .env infra/airflow/.env
 
-start-semantic-search-build: update-project
+start-semantic-search-build:
 	@ echo "$(BUILD_PRINT)Starting the semantic-search services"
 	@ cp .env ./infra/semantic-search
 	@ rm -rf ./infra/semantic-search/legal_radar

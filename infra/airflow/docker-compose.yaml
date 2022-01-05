@@ -54,9 +54,11 @@ x-airflow-common:
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-    AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKEND: 'airflow.api.auth.backend.basic_auth'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+    VAULT_TOKEN: ${VAULT_TOKEN}
+    VAULT_ADDR: ${VAULT_ADDR}
   volumes:
     - ./.env:/opt/airflow/.env
     - ./dags:/opt/airflow/dags
@@ -64,6 +66,7 @@ x-airflow-common:
     - ./plugins:/opt/airflow/plugins
     - ./legal_radar:/opt/airflow/legal_radar
   user: "${AIRFLOW_UID:-50000}:0"
+  command: bash -c "export PYTHONPATH='/opt/airflow/'"
   depends_on:
     &airflow-common-depends-on
     redis:
@@ -85,6 +88,8 @@ services:
       interval: 5s
       retries: 5
     restart: always
+    networks:
+      - airflow
 
   redis:
     image: redis:latest
@@ -96,18 +101,24 @@ services:
       timeout: 30s
       retries: 50
     restart: always
+    networks:
+      - airflow
 
   airflow-webserver:
+    container_name: airflow
     <<: *airflow-common
     command: webserver
-    ports:
-      - 8081:8080
+#    ports:
+#      - 8081:8080
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 10s
       timeout: 10s
       retries: 5
     restart: always
+    networks:
+      - airflow
+      - proxy-net
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -122,6 +133,8 @@ services:
       timeout: 10s
       retries: 5
     restart: always
+    networks:
+      - airflow
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -143,6 +156,8 @@ services:
       # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
       DUMB_INIT_SETSID: "0"
     restart: always
+    networks:
+      - airflow
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -157,6 +172,8 @@ services:
       timeout: 10s
       retries: 5
     restart: always
+    networks:
+      - airflow
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -238,6 +255,8 @@ services:
     user: "0:0"
     volumes:
       - .:/sources
+    networks:
+      - airflow
 
   airflow-cli:
     <<: *airflow-common
@@ -251,6 +270,8 @@ services:
       - bash
       - -c
       - airflow
+    networks:
+      - airflow
 
   flower:
     <<: *airflow-common
@@ -263,6 +284,8 @@ services:
       timeout: 10s
       retries: 5
     restart: always
+    networks:
+      - airflow
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -270,3 +293,11 @@ services:
 
 volumes:
   postgres-db-volume:
+
+
+networks:
+  airflow:
+    internal: true
+  proxy-net:
+    external:
+      name: proxy-net

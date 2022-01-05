@@ -6,7 +6,7 @@ services:
           - ./templates:/etc/nginx/templates
         environment:
           - LR_DEV=lr.dev.localhost
-          - LR_PROD=lr.prod.localhost
+          - LR_PROD=lr.localhost
 
         ports:
             - "80:80"

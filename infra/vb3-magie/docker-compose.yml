@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  vb3:
+    build: .
+#    image: cadmiumkitty/vocbench3:latest
+    ports:
+      - 1979:1979
+    volumes:
+      - vb3-disk:/opt/vocbench3/data
+    networks:
+      - vb3
+      - proxy-net
+
+volumes:
+  vb3-disk:
+  neon4j-disk:
+
+networks:
+  vb3:
+    internal: true
+  proxy-net:
+    external:
+      name: proxy-net
