@@ -5,12 +5,12 @@ services:
     container_name: jupyterhub
     build: .
     networks:
-      - lradar
+      - jupyterhub
       - proxy-net
 
 
 networks:
-  lradar:
+  jupyterhub:
     internal: true
   proxy-net:
     external:

@@ -5,9 +5,10 @@ services:
         volumes:
           - ./templates:/etc/nginx/templates
         environment:
-          - LR_DEV=lr.dev.localhost
+          - LR_DEV=lr.localhost
           - LR_PROD=lr.meaningfy.ws
-#          - LR_PROD=lr.localhost
+          - SC_DEV=sc.localhost
+          - SC_PROD=sc.meaningfy.ws
 
         ports:
             - "80:80"

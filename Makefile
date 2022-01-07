@@ -3,7 +3,9 @@ BUILD_PRINT = STEP:
 
 CURRENT_UID := $(shell id -u)
 export CURRENT_UID
-
+#project name that will be used as a prefix on docker containers
+#this is important for the nginx configuration
+PROJECT = lr
 # include .env files if they exist
 -include ./infra/notebook/.env.test
 -include .env
@@ -95,12 +97,11 @@ vault_secret_to_json: guard-VAULT_ADDR guard-VAULT_TOKEN vault-installed
 
 lint:
 	@ echo "$(BUILD_PRINT)Looking for dragons in your code ...."
-	@ pylint sem_covid
+	@ pylint legal-radar
 
 
 build-externals:
 	@ echo "$(BUILD_PRINT)Creating the necessary volumes, networks and folders and setting the special rights"
-	@ docker volume create s3-disk-lr
 	@ docker network create proxy-net || true
 #	@ docker volume create jupyter-notebook-work-lr
 #	@ docker volume create elasticsearch-lr
@@ -110,23 +111,11 @@ build-externals:
 
 start-storage: build-externals
 	@ echo "$(BUILD_PRINT)Starting the File Storage services"
-# 	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file infra/storage/.env.test up -d
-	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file .env up -d
+	@ docker-compose -p ${PROJECT} --file ./infra/storage/docker-compose.yml --env-file .env up -d
 
 stop-storage:
 	@ echo "$(BUILD_PRINT)Stopping the File Storage services"
-# 	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file infra/storage/.env.test down
-	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file .env down
-
-start-proxy: build-externals
-	@ echo "$(BUILD_PRINT)Starting the Nginx services"
-# 	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file infra/storage/.env.test up -d
-	@ docker-compose --file ./infra/nginx/docker-compose.yml --env-file .env up -d
-
-stop-proxy:
-	@ echo "$(BUILD_PRINT)Stopping the Nginx services"
-# 	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file infra/storage/.env.test down
-	@ docker-compose --file ./infra/nginx/docker-compose.yml --env-file .env down
+	@ docker-compose -p ${PROJECT} --file ./infra/storage/docker-compose.yml --env-file .env down
 
 start-notebook: build-externals
 	@ echo "$(BUILD_PRINT)Starting the Jupyter Notebook services"
@@ -149,15 +138,6 @@ stop-notebook:
 #	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file infra/notebook/.env.test down
 #	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file .env down
 
-start-haystack: build-externals
-	@ echo "$(BUILD_PRINT)Starting the Haystack services"
-# 	@ docker-compose --file ./infra/haystack/docker-compose.yml --env-file infra/haystack/.env.test up -d
-	@ docker-compose --file ./infra/haystack/docker-compose.yml --env-file .env up -d
-
-stop-haystack:
-	@ echo "$(BUILD_PRINT)Starting the Haystack services"
-# 	@ docker-compose --file ./infra/haystack/docker-compose.yml --env-file infra/haystack/.env.test down
-	@ docker-compose --file ./infra/haystack/docker-compose.yml --env-file .env down
 
 start-elasticsearch: build-externals
 	@ echo "$(BUILD_PRINT)Starting the Elasticsearch services"
@@ -168,16 +148,6 @@ stop-elasticsearch:
 	@ echo "$(BUILD_PRINT)Stopping the Elasticsearch services"
 # 	@ docker-compose --file ./infra/elasticsearch/docker-compose.yml --env-file infra/elasticsearch/.env.test down
 	@ docker-compose --file ./infra/elasticsearch/docker-compose.yml --env-file .env down
-
-start-graphdb: build-externals
-	@ echo "$(BUILD_PRINT)Starting the Graphdb services"
-# 	@ docker-compose --file ./infra/graphdb/docker-compose.yml --env-file infra/graphdb/.env.test up -d
-	@ docker-compose --file ./infra/graphdb/docker-compose.yml --env-file .env up -d
-
-stop-graphdb:
-	@ echo "$(BUILD_PRINT)Stopping the Graphdb services"
-# 	@ docker-compose --file ./infra/graphdb/docker-compose.yml --env-file infra/graphdb/.env.test down
-	@ docker-compose --file ./infra/graphdb/docker-compose.yml --env-file .env down
 
 create-env-airflow:
 	@ echo "$(BUILD_PRINT) Create Airflow env"
@@ -219,15 +189,6 @@ stop-jupyterhub:
 update-project:
 	@ echo "$(BUILD_PRINT)Sync project files from git repository."
 	@ git pull
-
-deploy-dags: update-project
-	@ echo "$(BUILD_PRINT)Deploy dags to Airflow"
-	@ rm -rf infra/airflow/dags/*
-	@ rm -rf infra/airflow/legal_radar/*
-	@ rm -rf infra/airflow/.env
-	@ cp -a dags/. infra/airflow/dags
-	@ cp -a legal_radar/. infra/airflow/legal_radar
-	@ cp -a .env infra/airflow/.env
 
 start-semantic-search-build:
 	@ echo "$(BUILD_PRINT)Starting the semantic-search services"

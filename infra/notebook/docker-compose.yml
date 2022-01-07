@@ -1,55 +1,43 @@
 version: '3'
 
-# NOTE: the current version of docker-compose (1.29.2) has a Bug and does not run GPU
-# the cuda versions of notebook need to be started, for now, via docker directly
-# see https://github.com/docker/compose/issues/8237
-
 services:
   sftp:
     image: atmoz/sftp
     volumes:
-      - jupyter-notebook-work-lr:/home/jovyan/work
+      - jupyter-notebook-work:/home/jovyan/work
     ports:
       - ${SFTP_PORT}:22
     #    command: ${SFTP_USER}:${SFTP_PASSWORD}:::upload
     #    command: ${SFTP_USER}:${SFTP_PASSWORD}:${SFTP_USER_ID}::upload
     command: jovyan:${SFTP_PASSWORD}:::work
     networks:
-      - lr
+      - notebook
 
   notebook:
-    # image: notebook_meaningfy_lr:latest
-    image: cschranz/gpu-jupyter:v1.4_cuda-11.0_ubuntu-20.04
-    runtime: nvidia
+    image: notebook_meaningfy:latest
     build:
       context: .
     command: "start-notebook.sh \
             --NotebookApp.password=${JUPYTER_PASSWORD} \
             --NotebookApp.token=${JUPYTER_TOKEN}"
-#    deploy:
-#      resources:
-#        reservations:
-#          devices:
-#            - driver: nvidia
-#              capabilities: [ gpu, utility ]
     volumes:
-      - jupyter-notebook-work-lr:/home/jovyan/work
+      - jupyter-notebook-work:/home/jovyan/work
     environment:
-      - JUPYTER_ENABLE_LAB=yes
       - AWS_ACCESS_KEY_ID=${MINIO_ACCESS_KEY}
       - AWS_SECRET_ACCESS_KEY=${MINIO_SECRET_KEY}
-    ports:
-      - ${JUPYTER_PORT:-8890}:8888
+      - MLFLOW_S3_ENDPOINT_URL=${MLFLOW_S3_ENDPOINT_URL}
     networks:
-      - lr
+      - notebook
+      - proxy-net
 
 volumes:
-  jupyter-notebook-work-lr:
-    external:
-      name: jupyter-notebook-work-lr
+  jupyter-notebook-work:
 
 networks:
-  lr:
+  notebook:
+    internal: true
+  proxy-net:
     external:
-      name: lr
+      name: proxy-net
+
 

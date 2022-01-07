@@ -2,7 +2,7 @@ FROM adoptopenjdk/openjdk8:alpine
 
 ENV vb_version=10.1.1
 ENV st_version=10.1.1
-
+RUN curl -L -o vocbench3-10.1.1-full.zip  https://bitbucket.org/art-uniroma2/vocbench3/downloads/vocbench3-10.1.1-full.zip
 COPY vocbench3-${vb_version}-full.zip /tmp
 RUN set -eux ; \
 	mkdir /opt/vocbench3 ; \
