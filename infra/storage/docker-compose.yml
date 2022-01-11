@@ -17,8 +17,7 @@ services:
 
 volumes:
   s3-disk:
-#    external:
-#      name: s3-disk
+
 
 networks:
   minio:
