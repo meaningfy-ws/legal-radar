@@ -2,7 +2,6 @@ version: '3'
 
 services:
   jupyterhub:
-    container_name: jupyterhub
     build: .
     networks:
       - jupyterhub

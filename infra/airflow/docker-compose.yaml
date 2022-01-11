@@ -105,7 +105,6 @@ services:
       - airflow
 
   airflow-webserver:
-    container_name: airflow
     <<: *airflow-common
     command: webserver
 #    ports:

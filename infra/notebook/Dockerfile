@@ -9,4 +9,3 @@ WORKDIR $HOME
 RUN python -m pip install --upgrade pip
 
 COPY requirements.txt ./requirements.txt
-#RUN /opt/conda/bin/pip install -r requirements.txt
