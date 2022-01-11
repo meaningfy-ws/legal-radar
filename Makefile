@@ -112,8 +112,8 @@ create-env-airflow:
 
 build-airflow: create-env-airflow build-externals
 	@ echo "$(BUILD_PRINT) Build Airflow services"
-	@ docker-compose -p ${PROJECT} --file ./infra/airflow/docker-compose.yml --env-file .env build --no-cache --force-rm
-	@ docker-compose -p ${PROJECT} --file ./infra/airflow/docker-compose.yml --env-file .env up -d --force-recreate
+	@ docker-compose -p ${PROJECT} --file ./infra/airflow/docker-compose.yaml --env-file .env build --no-cache --force-rm
+	@ docker-compose -p ${PROJECT} --file ./infra/airflow/docker-compose.yaml --env-file .env up -d --force-recreate
 
 start-airflow: build-externals
 	@ echo "$(BUILD_PRINT)Starting Airflow servies"
@@ -179,7 +179,7 @@ stop-jupyterhub:
 
 create-env-semantic-search:
 	@ echo "$(BUILD_PRINT) Create semantic-search env"
-	@ cd infra/semantic-search/ && ln -s -f ../../legal_radar
+	@ cd infra/semantic-search/ && cp -r ../../legal_radar .
 
 start-semantic-search-build: create-env-semantic-search
 	@ echo "$(BUILD_PRINT)Starting the semantic-search services"
