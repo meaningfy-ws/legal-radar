@@ -5,15 +5,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-          - "8555:8501"
+    expose:
+      - "8501"
     environment:
       - VAULT_ADDR=${VAULT_ADDR}
       - VAULT_TOKEN=${VAULT_TOKEN}
     networks:
-      - elk
+      - semantic
+      - proxy-net
+
 
 networks:
-  elk:
+  semantic:
+    internal: true
+  proxy-net:
     external:
-      name: elk
+      name: proxy-net

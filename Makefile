@@ -3,7 +3,9 @@ BUILD_PRINT = STEP:
 
 CURRENT_UID := $(shell id -u)
 export CURRENT_UID
-
+#project name that will be used as a prefix on docker containers
+#this is important for the nginx configuration
+PROJECT = lr
 # include .env files if they exist
 -include ./infra/notebook/.env.test
 -include .env
@@ -95,29 +97,54 @@ vault_secret_to_json: guard-VAULT_ADDR guard-VAULT_TOKEN vault-installed
 
 lint:
 	@ echo "$(BUILD_PRINT)Looking for dragons in your code ...."
-	@ pylint sem_covid
+	@ pylint legal-radar
 
 
 build-externals:
 	@ echo "$(BUILD_PRINT)Creating the necessary volumes, networks and folders and setting the special rights"
-	@ docker volume create s3-disk-lr
-	@ docker volume create jupyter-notebook-work-lr
-	@ docker volume create elasticsearch-lr
-	@ docker volume create graphdb-data-lr
-	@ docker network create -d bridge lr || true
+	@ docker network create proxy-net || true
 
+create-env-airflow:
+	@ echo "$(BUILD_PRINT) Create Airflow env"
+	@ mkdir -p infra/airflow/logs infra/airflow/plugins
+	@ cd infra/airflow/ && ln -s -f ../../dags && ln -s -f ../../legal_radar
+	@ echo -e "AIRFLOW_UID=$(CURRENT_UID)" >infra/airflow/.env
+
+build-airflow: create-env-airflow build-externals
+	@ echo "$(BUILD_PRINT) Build Airflow services"
+	@ docker-compose -p ${PROJECT} --file ./infra/airflow/docker-compose.yml --env-file .env build --no-cache --force-rm
+	@ docker-compose -p ${PROJECT} --file ./infra/airflow/docker-compose.yml --env-file .env up -d --force-recreate
+
+start-airflow: build-externals
+	@ echo "$(BUILD_PRINT)Starting Airflow servies"
+	@ docker-compose -p ${PROJECT} --file ./infra/airflow/docker-compose.yaml --env-file .env up -d
+
+stop-airflow:
+	@ echo "$(BUILD_PRINT)Stoping Airflow services"
+	@ docker-compose -p ${PROJECT} --file ./infra/airflow/docker-compose.yaml --env-file .env down
+
+build-elasticsearch: build-externals
+	@ echo "$(BUILD_PRINT) Build Elasticsearch services"
+	@ docker-compose -p ${PROJECT} --file ./infra/elasticsearch/docker-compose.yml --env-file .env build --no-cache --force-rm
+	@ docker-compose -p ${PROJECT} --file ./infra/elasticsearch/docker-compose.yml --env-file .env up -d --force-recreate
+
+start-elasticsearch: build-externals
+	@ echo "$(BUILD_PRINT)Starting the Elasticsearch services"
+	@ docker-compose -p ${PROJECT} --file ./infra/elasticsearch/docker-compose.yml --env-file .env up -d
+
+stop-elasticsearch:
+	@ echo "$(BUILD_PRINT)Stopping the Elasticsearch services"
+	@ docker-compose -p ${PROJECT} --file ./infra/elasticsearch/docker-compose.yml --env-file .env down
 
 start-storage: build-externals
 	@ echo "$(BUILD_PRINT)Starting the File Storage services"
-# 	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file infra/storage/.env.test up -d
-	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file .env up -d
+	@ docker-compose -p ${PROJECT} -p ${PROJECT} --file ./infra/storage/docker-compose.yml --env-file .env up -d
 
 stop-storage:
 	@ echo "$(BUILD_PRINT)Stopping the File Storage services"
-# 	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file infra/storage/.env.test down
-	@ docker-compose --file ./infra/storage/docker-compose.yml --env-file .env down
+	@ docker-compose -p ${PROJECT} -p ${PROJECT} --file ./infra/storage/docker-compose.yml --env-file .env down
 
-start-notebook: build-externals
+start-notebook-cuda: build-externals
 	@ echo "$(BUILD_PRINT)Starting the Jupyter Notebook services"
 	@ docker image build -t notebook_meaningfy_lr:latest -f infra/notebook/Dockerfile ./infra/notebook
 	@ docker run --gpus all -d -it -p 8890:8888 -v jupyter-notebook-work-lr:/home/jovyan/work \
@@ -128,105 +155,59 @@ start-notebook: build-externals
 			start-notebook.sh \
             --NotebookApp.password=${JUPYTER_PASSWORD} \
             --NotebookApp.token=${JUPYTER_TOKEN} \
-#	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file infra/notebook/.env.test up -d
-#	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file .env up -d
+#	@ docker-compose --file ./infra/notebook-cuda/docker-compose.yml --env-file .env up -d
 
-stop-notebook:
+stop-notebook-cuda:
 	@ echo "$(BUILD_PRINT)Starting the Jupyter Notebook services"
 	@ docker stop notebook_meaningfy
 	@ docker rm notebook_meaningfy
-#	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file infra/notebook/.env.test down
-#	@ docker-compose --file ./infra/notebook/docker-compose.yml --env-file .env down
+#	@ docker-compose --file ./infra/notebook-cuda/docker-compose.yml --env-file .env down
 
-start-haystack: build-externals
-	@ echo "$(BUILD_PRINT)Starting the Haystack services"
-# 	@ docker-compose --file ./infra/haystack/docker-compose.yml --env-file infra/haystack/.env.test up -d
-	@ docker-compose --file ./infra/haystack/docker-compose.yml --env-file .env up -d
-
-stop-haystack:
-	@ echo "$(BUILD_PRINT)Starting the Haystack services"
-# 	@ docker-compose --file ./infra/haystack/docker-compose.yml --env-file infra/haystack/.env.test down
-	@ docker-compose --file ./infra/haystack/docker-compose.yml --env-file .env down
-
-start-elasticsearch: build-externals
-	@ echo "$(BUILD_PRINT)Starting the Elasticsearch services"
-# 	@ docker-compose --file ./infra/elasticsearch/docker-compose.yml --env-file infra/elasticsearch/.env.test up -d
-	@ docker-compose --file ./infra/elasticsearch/docker-compose.yml --env-file .env up -d
-
-stop-elasticsearch:
-	@ echo "$(BUILD_PRINT)Stopping the Elasticsearch services"
-# 	@ docker-compose --file ./infra/elasticsearch/docker-compose.yml --env-file infra/elasticsearch/.env.test down
-	@ docker-compose --file ./infra/elasticsearch/docker-compose.yml --env-file .env down
-
-start-graphdb: build-externals
-	@ echo "$(BUILD_PRINT)Starting the Graphdb services"
-# 	@ docker-compose --file ./infra/graphdb/docker-compose.yml --env-file infra/graphdb/.env.test up -d
-	@ docker-compose --file ./infra/graphdb/docker-compose.yml --env-file .env up -d
-
-stop-graphdb:
-	@ echo "$(BUILD_PRINT)Stopping the Graphdb services"
-# 	@ docker-compose --file ./infra/graphdb/docker-compose.yml --env-file infra/graphdb/.env.test down
-	@ docker-compose --file ./infra/graphdb/docker-compose.yml --env-file .env down
-
-create-env-airflow:
-	@ echo "$(BUILD_PRINT) Create Airflow env"
-	@ mkdir -p infra/airflow/dags infra/airflow/logs infra/airflow/plugins infra/airflow/legal_radar
-	@ echo -e "AIRFLOW_UID=$(CURRENT_UID)" >infra/airflow/.env
-
-clear-airflow: create-env-airflow
-	@ echo "$(BUILD_PRINT) Clear Airflow volumes" 
-	@ docker-compose --file ./infra/airflow/docker-compose.yaml --env-file ./infra/airflow/.env down --volumes --remove-orphans
-
-build-airflow: clear-airflow create-env-airflow
-	@ echo "$(BUILD_PRINT) Build Airflow services"
-	@ docker-compose --file ./infra/airflow/docker-compose.yaml --env-file ./infra/airflow/.env up airflow-init
-
-
-start-airflow:
-	@ echo "$(BUILD_PRINT)Starting Airflow servies"
-	@ docker-compose --file ./infra/airflow/docker-compose.yaml --env-file ./infra/airflow/.env up
-
-
-stop-airflow:
-	@ echo "$(BUILD_PRINT)Stoping Airflow services"
-	@ docker-compose --file ./infra/airflow/docker-compose.yaml --env-file ./infra/airflow/.env down 
 
 build-jupyterhub:
 	@ echo "$(BUILD_PRINT)Building Jupyterhub servies"
-	@ docker-compose --file ./infra/jupyterhub/docker-compose.yml build --no-cache --force-rm
-	@ docker-compose --file ./infra/jupyterhub/docker-compose.yml up -d --force-recreate
+	@ docker-compose -p ${PROJECT} --file ./infra/jupyterhub/docker-compose.yml build --no-cache --force-rm
+	@ docker-compose -p ${PROJECT} --file ./infra/jupyterhub/docker-compose.yml up -d --force-recreate
 
 start-jupyterhub:
 	@ echo "$(BUILD_PRINT)Starting Jupyterhub servies"
-	@ docker-compose --file ./infra/jupyterhub/docker-compose.yml up -d
+	@ docker-compose -p ${PROJECT} --file ./infra/jupyterhub/docker-compose.yml up -d
 
 stop-jupyterhub:
 	@ echo "$(BUILD_PRINT)Stoping Jupyterhub servies"
-	@ docker-compose --file ./infra/jupyterhub/docker-compose.yml down
+	@ docker-compose -p ${PROJECT} --file ./infra/jupyterhub/docker-compose.yml down
+
+create-env-semantic-search:
+	@ echo "$(BUILD_PRINT) Create semantic-search env"
+	@ cd infra/semantic-search/ && ln -s -f ../../legal_radar
+
+start-semantic-search-build: create-env-semantic-search
+	@ echo "$(BUILD_PRINT)Starting the semantic-search services"
+	@ docker-compose -p ${PROJECT} --file ./infra/semantic-search/docker-compose.yml --env-file .env build --no-cache --force-rm
+	@ docker-compose -p ${PROJECT} --file ./infra/semantic-search/docker-compose.yml --env-file .env up -d --force-recreate
+
+stop-semantic-search: create-env-semantic-search
+	@ echo "$(BUILD_PRINT)Stopping the semantic-search services"
+	@ docker-compose -p ${PROJECT} --file ./infra/semantic-search/docker-compose.yml --env-file .env down
+
+
+start-notebook: build-externals
+	@ echo "$(BUILD_PRINT)Starting the Jupyter Notebook services"
+	@ docker-compose -p ${PROJECT} --file ./infra/notebook/docker-compose.yml --env-file .env up -d
+
+start-notebook-build: build-externals
+	@ echo "$(BUILD_PRINT)Rebuildig the image and then starting the Jupyter Notebook services"
+	@ docker-compose -p ${PROJECT} --file ./infra/notebook/docker-compose.yml --env-file .env build --no-cache --force-rm
+	@ docker-compose -p ${PROJECT} --file ./infra/notebook/docker-compose.yml --env-file .env up -d --force-recreate
+
+stop-notebook:
+	@ echo "$(BUILD_PRINT)Stopping the Jupyter Notebook services"
+	@ docker-compose -p ${PROJECT} --file ./infra/notebook/docker-compose.yml --env-file .env down
+
 
 update-project:
 	@ echo "$(BUILD_PRINT)Sync project files from git repository."
 	@ git pull
 
-deploy-dags: update-project
-	@ echo "$(BUILD_PRINT)Deploy dags to Airflow"
-	@ rm -rf infra/airflow/dags/*
-	@ rm -rf infra/airflow/legal_radar/*
-	@ rm -rf infra/airflow/.env
-	@ cp -a dags/. infra/airflow/dags
-	@ cp -a legal_radar/. infra/airflow/legal_radar
-	@ cp -a .env infra/airflow/.env
-
-start-semantic-search-build: update-project
-	@ echo "$(BUILD_PRINT)Starting the semantic-search services"
-	@ cp .env ./infra/semantic-search
-	@ rm -rf ./infra/semantic-search/legal_radar
-	@ cp -r legal_radar ./infra/semantic-search/
-	@ docker container prune -f
-	@ docker image rm semantic-search_semantic-search || true
-	@ docker-compose --file ./infra/semantic-search/docker-compose.yml --env-file ./infra/semantic-search/.env build --no-cache --force-rm
-	@ docker-compose --file ./infra/semantic-search/docker-compose.yml --env-file ./infra/semantic-search/.env up -d --force-recreate
-
-stop-semantic-search:
-	@ echo "$(BUILD_PRINT)Stopping the semantic-search services"
-	@ docker-compose --file ./infra/semantic-search/docker-compose.yml --env-file ./infra/semantic-search/.env down
+start-services: | start-airflow start-elasticsearch start-jupyterhub start-notebook start-storage start-semantic-search-build
+stop-services: | stop-airflow stop-elasticsearch stop-jupyterhub stop-notebook stop-storage stop-semantic-search-build

@@ -3,6 +3,14 @@ version: '3'
 services:
   jupyterhub:
     build: .
-    ports:
-      - "8887:8887"
-      
+    networks:
+      - jupyterhub
+      - proxy-net
+
+
+networks:
+  jupyterhub:
+    internal: true
+  proxy-net:
+    external:
+      name: proxy-net
