@@ -174,16 +174,14 @@ stop-jupyterhub:
 	@ echo "$(BUILD_PRINT)Stoping Jupyterhub servies"
 	@ docker-compose -p ${PROJECT} --file ./infra/jupyterhub/docker-compose.yml down
 
-create-env-semantic-search:
-	@ echo "$(BUILD_PRINT) Create semantic-search env"
-	@ cd infra/semantic-search/ && cp -r ../../legal_radar .
 
-start-semantic-search-build: create-env-semantic-search
+start-semantic-search-build:
 	@ echo "$(BUILD_PRINT)Starting the semantic-search services"
 	@ docker-compose -p ${PROJECT} --file ./infra/semantic-search/docker-compose.yml --env-file .env build --no-cache --force-rm
 	@ docker-compose -p ${PROJECT} --file ./infra/semantic-search/docker-compose.yml --env-file .env up -d --force-recreate
 
-stop-semantic-search: create-env-semantic-search
+
+stop-semantic-search:
 	@ echo "$(BUILD_PRINT)Stopping the semantic-search services"
 	@ docker-compose -p ${PROJECT} --file ./infra/semantic-search/docker-compose.yml --env-file .env down
 
