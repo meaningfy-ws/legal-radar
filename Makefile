@@ -15,29 +15,26 @@ PROJECT = lr
 # Basic commands
 #-----------------------------------------------------------------------------
 
-install-prod:
+install:
 	@ echo "$(BUILD_PRINT)Installing the prod requirements"
-	@ pip install -r requirements/requirements-prod.txt
+	@ pip install --upgrade pip
+	@ pip install -r requirements.txt
 
 install-dev: install-test
 	@ echo "$(BUILD_PRINT)Installing the dev requirements"
 	@ pip install --upgrade pip
-	@ pip install -r requirements/requirements-dev.txt
+	@ pip install -r requirements-dev.txt
 
-install-test: install-prod
-	@ echo "$(BUILD_PRINT)Installing the test requirements"
-	@ pip install -r requirements/requirements-test.txt
-
-install:
-	@ echo "$(BUILD_PRINT)Installing the requirements"
-	@ echo "$(BUILD_PRINT)Warning: this setup depends on the Airflow 2.1 constraints. If you upgrade the Airflow version, make sure to adjust the constraint file reference."
-	@ pip install --upgrade pip
-	@ pip install "apache-airflow==2.1.0" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2-1/constraints-no-providers-3.8.txt"
-#	@ pip install -r requirements.txt --use-deprecated legacy-resolver --constraint "https://github.com/apache/airflow/blob/constraints-2-1/constraints-no-providers-3.8.txt"
-	@ pip install -r requirements.txt --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2-1/constraints-no-providers-3.8.txt"
-	@ python -m spacy download en_core_web_sm
-
-all: install
+#install:
+#	@ echo "$(BUILD_PRINT)Installing the requirements"
+#	@ echo "$(BUILD_PRINT)Warning: this setup depends on the Airflow 2.1 constraints. If you upgrade the Airflow version, make sure to adjust the constraint file reference."
+#	@ pip install --upgrade pip
+#	@ pip install "apache-airflow==2.1.0" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2-1/constraints-no-providers-3.8.txt"
+##	@ pip install -r requirements.txt --use-deprecated legacy-resolver --constraint "https://github.com/apache/airflow/blob/constraints-2-1/constraints-no-providers-3.8.txt"
+#	@ pip install -r requirements.txt --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2-1/constraints-no-providers-3.8.txt"
+#	@ python -m spacy download en_core_web_sm
+#
+#all: install
 
 test:
 	@ echo "$(BUILD_PRINT)Running the unit tests (default)"

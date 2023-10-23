@@ -1,23 +1,25 @@
-version: '3'
+version: '3.8'
 
 services:
-  semantic-search:
+  semantic-search-service:
+    container_name: semantic-search-container
     build:
       context: .
       dockerfile: Dockerfile
-    expose:
-      - "8501"
-    environment:
-      - VAULT_ADDR=${VAULT_ADDR}
-      - VAULT_TOKEN=${VAULT_TOKEN}
     networks:
-      - semantic
       - proxy-net
+    labels:
+      #### Labels define the behavior and rules of the traefik proxy for this container ####
+      - "traefik.enable=true" # <== Enable traefik to proxy this container
+      - "traefik.http.routers.onto.rule=Host(`legal.${DOMAIN}`)" # <== Your Domain Name goes here for the http rule
+      - "traefik.http.routers.onto.entrypoints=web" # <== Defining the entrypoint for http, **ref: line 30
+      - "traefik.http.routers.onto.middlewares=redirect@file" # <== This is a middleware to redirect to https
+      - "traefik.http.routers.onto-secured.rule=Host(`legal.${DOMAIN}`)" # <== Your Domain Name for the https rule
+      - "traefik.http.routers.onto-secured.entrypoints=web-secured" # <== Defining entrypoint for https, **ref: line 31
+      - "traefik.http.routers.onto-secured.tls.certresolver=mytlschallenge" # <== Defining certsresolvers for https
 
 
 networks:
-  semantic:
-    internal: true
   proxy-net:
     external:
       name: proxy-net

@@ -1,6 +1,8 @@
-# -r requirements/infra.txt
-# -r requirements/test.txt
-# -r requirements/ml.txt
-# -r requirements/jupyter.txt
-# -r requirements/flask.txt
-# -r requirements/doc.txt
+langchain==0.0.315
+transformers==4.34.0
+datasets==2.14.5
+pandas
+sentence_transformers
+pymilvus
+streamlit
+hvac
