@@ -4,8 +4,8 @@ services:
   semantic-search-service:
     container_name: semantic-search-container
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../../
+      dockerfile: ./infra/semantic-search/Dockerfile
     networks:
       - proxy-net
     labels:
