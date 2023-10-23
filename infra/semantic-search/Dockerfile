@@ -10,3 +10,5 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 ENV PYTHONPATH "$PYTHONPATH:$(pwd)/legal_radar"
 CMD streamlit run legal_radar/entrypoints/streamlit_app/app.py
+
+EXPOSE 8501
