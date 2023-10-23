@@ -2,7 +2,7 @@
 FROM python:3.8
 ADD ../../legal_radar /opt/legal_radar
 COPY ../../requirements.txt /opt
-COPY ../../.env /opt
+#COPY ../../.env /opt
 
 
 WORKDIR /opt
